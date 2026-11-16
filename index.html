@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071225">
+  <title>VORTEX STORE — цифровые продукты</title>
+  <style>
+    :root{--bg:#06101f;--panel:#0b1b31;--panel2:#0e2340;--line:#193b64;--blue:#278bff;--cyan:#58c7ff;--text:#eef6ff;--muted:#9eb2ca;--green:#55d6a0}
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(ellipse at 75% -10%,#123967 0,transparent 38%),linear-gradient(180deg,#071426,#040b16 72%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}
+    a{color:inherit;text-decoration:none}
+    .wrap{width:min(1080px,calc(100% - 32px));margin:auto}
+    header{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #173252}
+    .brand{display:flex;align-items:center;gap:11px;font-weight:850;letter-spacing:1.4px}
+    .logo{width:39px;height:39px;border-radius:12px;background:linear-gradient(145deg,#37a4ff,#1551c8);display:grid;place-items:center;box-shadow:0 6px 25px #1677e855;font-size:21px}
+    nav{display:flex;gap:23px;color:var(--muted);font-size:14px}
+    nav a:hover{color:white}
+    .tag{border:1px solid #2869a8;color:#8fcaff;background:#0b2b4d;padding:7px 11px;border-radius:999px;font-size:12px;font-weight:700}
+    .header-actions{display:flex;align-items:center;gap:10px}
+    .currency-switch{display:flex;align-items:center;gap:3px;padding:3px;border:1px solid #24517b;background:#08182b;border-radius:999px}
+    .currency-btn{border:0;background:transparent;color:#9eb2ca;padding:7px 10px;border-radius:999px;font:inherit;font-size:11px;font-weight:800;cursor:pointer}
+    .currency-btn.active{background:linear-gradient(135deg,#278bff,#1551c8);color:white;box-shadow:0 3px 12px #1677e855}
+    .currency-btn:focus-visible{outline:2px solid #58c7ff;outline-offset:2px}
+    .cart-open{border:1px solid #2869a8;background:#0b2b4d;color:#eaf5ff;padding:8px 11px;border-radius:11px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
+    .cart-open:hover{background:#124375;border-color:#399fff}
+    .cart-count{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#278bff;color:white;margin-left:3px;font-size:10px}
+    .add-cart{border:1px solid #2877bb;background:linear-gradient(135deg,#1677d8,#124eaa);color:white;padding:9px 11px;border-radius:10px;font:inherit;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap}
+    .add-cart:hover{filter:brightness(1.15)}
+    .cart-overlay{position:fixed;inset:0;background:#020812c9;z-index:20;display:none;align-items:flex-start;justify-content:center;padding:18px;overflow:auto}
+    .cart-overlay.open{display:flex}
+    .cart-dialog{width:min(560px,100%);margin:4vh auto;background:linear-gradient(160deg,#0e2340,#071426);border:1px solid #286092;border-radius:20px;padding:20px;box-shadow:0 25px 80px #000b}
+    .cart-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+    .cart-head h2{margin:0;font-size:22px}
+    .icon-btn{border:1px solid #315575;background:#102741;color:#eaf5ff;border-radius:10px;width:37px;height:37px;font-size:19px;cursor:pointer}
+    .cart-items{display:flex;flex-direction:column;gap:10px}
+    .cart-item{display:flex;align-items:center;gap:12px;padding:12px;background:#091a2e;border:1px solid #1b3d60;border-radius:13px}
+    .cart-item-main{flex:1;min-width:0}
+    .cart-item-name{font-weight:800;font-size:14px}
+    .cart-item-price{font-size:12px;color:#9eb2ca;margin-top:4px}
+    .qty-controls{display:flex;align-items:center;gap:7px}
+    .qty-controls button{border:1px solid #315575;background:#102741;color:#eaf5ff;border-radius:8px;width:29px;height:29px;font-size:16px;cursor:pointer}
+    .qty{min-width:14px;text-align:center;font-size:13px;font-weight:800}
+    .remove-item{border:0;background:transparent;color:#8fb6d9;font-size:11px;cursor:pointer;margin-top:5px;padding:0}
+    .cart-empty{padding:22px;text-align:center;border:1px dashed #315575;border-radius:13px;color:#9eb2ca;font-size:13px}
+    .cart-summary{border-top:1px solid #244564;margin-top:16px;padding-top:15px;display:flex;justify-content:space-between;align-items:center;font-weight:800}
+    .cart-note{color:#9eb2ca;font-size:11px;line-height:1.5;margin:12px 0}
+    .cart-checkout{width:100%;border:0;background:linear-gradient(135deg,#278bff,#1551c8);color:white;border-radius:11px;padding:12px;font:inherit;font-weight:850;cursor:pointer}
+    .cart-checkout:disabled{opacity:.45;cursor:not-allowed}
+    .price-wrap{display:flex;flex-direction:column;gap:3px}
+    .price-note{font-size:10px;color:#7890aa;font-weight:500}
+    .hero{padding:62px 0 38px;display:grid;grid-template-columns:1.35fr .65fr;gap:30px;align-items:center}
+    .eyebrow{color:var(--cyan);font-weight:750;font-size:12px;letter-spacing:2px;text-transform:uppercase}
+    h1{font-size:clamp(37px,6vw,64px);line-height:1.03;letter-spacing:-2px;margin:14px 0 17px}
+    h1 span{color:#55b8ff}
+    .sub{color:var(--muted);font-size:16px;line-height:1.7;max-width:590px;margin:0}
+    .hero-card{background:linear-gradient(145deg,#102b4c,#09182c);border:1px solid #1d4772;border-radius:23px;padding:24px;box-shadow:0 18px 55px #0005}
+    .orb{width:70px;height:70px;border-radius:22px;background:linear-gradient(145deg,#53c8ff,#1758da);display:grid;place-items:center;font-size:32px;box-shadow:0 0 36px #258fff55;margin-bottom:18px}
+    .hero-card h3{margin:0 0 8px;font-size:18px}.hero-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:25px 0 18px}
+    h2{font-size:25px;margin:0 0 5px}.section-head p{color:var(--muted);font-size:13px;margin:0}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:17px}
+    input{width:min(280px,100%);background:#09182a;border:1px solid #1c3c60;color:white;border-radius:11px;padding:11px 13px;outline:none;font:inherit;font-size:13px}
+    input:focus{border-color:#399fff;box-shadow:0 0 0 3px #278bff22}
+    .filters{display:flex;gap:7px;flex-wrap:wrap}
+    .filter{border:1px solid #1c3c60;background:#0a192b;color:#b8cbe0;border-radius:999px;padding:9px 13px;font:inherit;font-size:12px;cursor:pointer}
+    .filter.active,.filter:hover{background:#123b67;border-color:#328ee4;color:white}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .product{background:linear-gradient(160deg,#0d2037,#091629);border:1px solid #173656;border-radius:18px;padding:18px;min-height:220px;display:flex;flex-direction:column;transition:.2s}
+    .product:hover{transform:translateY(-3px);border-color:#2c78bd;box-shadow:0 12px 30px #0004}
+    .p-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .p-icon{width:45px;height:45px;border-radius:14px;background:#12345a;display:grid;place-items:center;font-size:21px}
+    .status{font-size:10px;font-weight:800;border-radius:999px;padding:6px 8px;background:#182d43;color:#b4c8dc;white-space:nowrap}
+    .status.own{background:#103b37;color:#83f0c1}
+    .product h3{margin:17px 0 6px;font-size:17px}.product p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+    .p-bottom{margin-top:auto;padding-top:17px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .price{font-size:13px;font-weight:750;color:#dceeff}
+    .soon{font-size:11px;color:#7ebeff;border:1px solid #24517b;padding:7px 9px;border-radius:9px}
+    .info{margin:25px 0 55px;padding:19px 20px;background:#09182a;border:1px solid #183656;border-radius:16px;color:var(--muted);font-size:13px;line-height:1.65}
+    .info strong{color:#e7f3ff}
+    footer{border-top:1px solid #173252;padding:22px 0 30px;color:#7890aa;font-size:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .empty{grid-column:1/-1;color:var(--muted);padding:25px;text-align:center;border:1px dashed #244464;border-radius:14px}
+    @media(max-width:760px){nav{display:none}.hero{grid-template-columns:1fr;padding:45px 0 25px}.hero-card{max-width:440px}.grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:500px){.grid{grid-template-columns:1fr}.section-head{align-items:start;flex-direction:column}.wrap{width:min(100% - 24px,1080px)}header{height:68px}.header-actions{gap:5px}.header-actions>.tag{display:none}.currency-btn{padding:7px 8px}.cart-open{padding:7px 8px;font-size:11px}.cart-label{display:none}.hero{padding-top:38px}h1{letter-spacing:-1.4px}.cart-overlay{padding:10px}.cart-dialog{padding:15px;margin:2vh auto}.p-bottom{align-items:flex-start;flex-direction:column}.add-cart{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="#top"><span class="logo">V</span><span>VORTEX <span style="color:#58baff">STORE</span></span></a>
+      <nav><a href="#catalog">Каталог</a><a href="#about">О магазине</a></nav>
+      <div class="header-actions">
+        <span class="tag">DEMO · 2026</span>
+        <button class="cart-open" id="openCart" type="button" aria-haspopup="dialog" aria-controls="cartDialog">🛒 <span class="cart-label">Корзина</span> <span class="cart-count" id="cartCount">0</span></button>
+        <div class="currency-switch" role="group" aria-label="Выбор валюты">
+          <button class="currency-btn" type="button" data-currency="uah" aria-pressed="false">₴ UAH</button>
+          <button class="currency-btn active" type="button" data-currency="usd" aria-pressed="true">$ USD</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Цифровой магазин нового формата</div>
+          <h1>Больше возможностей.<br><span>Умный выбор.</span></h1>
+          <p class="sub">VORTEX STORE — будущий магазин цифровых продуктов и подписок. Мы добавляем предложения только после проверки условий продажи и способа официальной активации.</p>
+        </div>
+        <aside class="hero-card">
+          <div class="orb">✦</div>
+          <h3>Добро пожаловать в VORTEX</h3>
+          <p>Сейчас это демонстрационная версия сайта. Можно попробовать каталог, переключение валюты и демо-корзину; реальные покупки и оплата пока отключены.</p>
+        </aside>
+      </section>
+
+      <section id="catalog">
+        <div class="section-head">
+          <div><h2>Каталог</h2><p>Посмотри, какие направления готовятся к запуску.</p></div>
+          <span class="tag">Каталог в разработке</span>
+        </div>
+        <div class="tools">
+          <input id="search" type="search" placeholder="Найти продукт…" aria-label="Поиск по каталогу">
+          <div class="filters" role="group" aria-label="Фильтр каталога">
+            <button class="filter active" data-filter="all">Все</button>
+            <button class="filter" data-filter="own">Свои продукты</button>
+            <button class="filter" data-filter="external">Другие сервисы</button>
+          </div>
+        </div>
+        <div class="grid" id="products">
+          <article class="product" data-type="own" data-name="vortex vpn собственный проект vpn">
+            <div class="p-top"><div class="p-icon">◈</div><span class="status own">СВОЙ ПРОЕКТ</span></div>
+            <h3>VORTEX VPN</h3>
+            <p>Собственный цифровой сервис VORTEX. Перед запуском магазина нужно подтвердить тарифы и готовность выдачи доступа.</p>
+            <div class="p-bottom"><span class="price">Скоро в каталоге</span><span class="soon">В разработке</span></div>
+          </article>
+          <article class="product" data-type="external" data-name="chatgpt go openai искусственный интеллект ai">
+            <div class="p-top"><div class="p-icon">✧</div><span class="status">ПРОВЕРКА</span></div>
+            <h3>ChatGPT Go</h3>
+            <p>Изучаем, существуют ли разрешённые варианты партнёрской продажи или официальной активации.</p>
+            <div class="p-bottom"><span class="price-wrap"><span class="price" data-price-usd="5">Демо-цена: $5.00</span><span class="price-note">Не реальная цена продажи</span></span><button class="add-cart" type="button" data-add-cart="chatgpt">＋ В демо-корзину</button></div>
+          </article>
+          <article class="product" data-type="external" data-name="telegram premium телеграм подписка">
+            <div class="p-top"><div class="p-icon">➤</div><span class="status">ПРОВЕРКА</span></div>
+            <h3>Telegram Premium</h3>
+            <p>Проверяем официальные подарочные и партнёрские способы оформления подписки.</p>
+            <div class="p-bottom"><span class="price-wrap"><span class="price" data-price-usd="3">Демо-цена: $3.00</span><span class="price-note">Не реальная цена продажи</span></span><button class="add-cart" type="button" data-add-cart="telegram">＋ В демо-корзину</button></div>
+          </article>
+          <article class="product" data-type="external" data-name="youtube premium видео">
+            <div class="p-top"><div class="p-icon">▷</div><span class="status">ПРОВЕРКА</span></div>
+            <h3>YouTube Premium</h3>
+            <p>Проверяем официальные варианты доступа и условия для продавцов.</p>
+            <div class="p-bottom"><span class="price-wrap"><span class="price" data-price-usd="4">Демо-цена: $4.00</span><span class="price-note">Не реальная цена продажи</span></span><button class="add-cart" type="button" data-add-cart="youtube">＋ В демо-корзину</button></div>
+          </article>
+          <article class="product" data-type="external" data-name="цифровые подарочные карты лицензии">
+            <div class="p-top"><div class="p-icon">▣</div><span class="status">ИДЕЯ</span></div>
+            <h3>Подарочные карты</h3>
+            <p>Возможная категория для официальных цифровых кодов от проверенных продавцов.</p>
+            <div class="p-bottom"><span class="price">Поставщик не выбран</span><span class="soon">На рассмотрении</span></div>
+          </article>
+          <article class="product" data-type="own" data-name="цифровые продукты собственные проекты vortex">
+            <div class="p-top"><div class="p-icon">⚡</div><span class="status own">СВОИ ПРОДУКТЫ</span></div>
+            <h3>Проекты VORTEX</h3>
+            <p>В будущем здесь могут появиться собственные цифровые продукты и услуги.</p>
+            <div class="p-bottom"><span class="price">Скоро в каталоге</span><span class="soon">В разработке</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="info" id="about">
+        <strong>Важно:</strong> это макет, а не действующий магазин. Сейчас здесь нельзя оплатить или купить подписку. Корзина работает только в демонстрационном режиме и не отправляет заказ. Цены в карточках — только примеры для проверки корзины и переключателя валюты: они не являются предложением продажи. Для отображения гривен используется условный демонстрационный курс 1 USD = 43 UAH, а не актуальный курс обмена. Не продавай чужие аккаунты и не обещай скидки, пока не подтверждены права на продажу, источник подписки и условия её активации. Перед подключением платежей, обработкой заказов и публикацией магазина обязательно привлеки родителя или опекуна.
+      </section>
+    </main>
+    <footer><span>© 2026 VORTEX STORE · Демо-проект</span><span>Тёмный стиль · Синие акценты</span></footer>
+  </div>
+  <div class="cart-overlay" id="cartDialog" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+    <div class="cart-dialog">
+      <div class="cart-head"><h2 id="cartTitle">Твоя демо-корзина</h2><button class="icon-btn" id="closeCart" type="button" aria-label="Закрыть корзину">×</button></div>
+      <div class="cart-items" id="cartItems"><div class="cart-empty">Корзина пока пустая. Добавь товар из каталога.</div></div>
+      <div class="cart-summary"><span>Итого (демо)</span><span id="cartTotal">$0.00</span></div>
+      <p class="cart-note">Это только демонстрация интерфейса. Заказ не отправляется, подписки не продаются, оплата не принимается.</p>
+      <button class="cart-checkout" id="demoCheckout" type="button" disabled>Демо-оформление недоступно</button>
+    </div>
+  </div>
+
+  <script>
+    const search = document.getElementById('search');
+    const cards = [...document.querySelectorAll('.product')];
+    const filters = [...document.querySelectorAll('.filter')];
+    const currencyButtons = [...document.querySelectorAll('[data-currency]')];
+    const priceLabels = [...document.querySelectorAll('[data-price-usd]')];
+    const cartDialog = document.getElementById('cartDialog');
+    const cartItemsEl = document.getElementById('cartItems');
+    const cartCountEl = document.getElementById('cartCount');
+    const cartTotalEl = document.getElementById('cartTotal');
+    const checkoutButton = document.getElementById('demoCheckout');
+    const DEMO_UAH_PER_USD = 43;
+    const PRODUCTS = {
+      chatgpt: {name:'ChatGPT Go', price:5, icon:'✧'},
+      telegram: {name:'Telegram Premium', price:3, icon:'➤'},
+      youtube: {name:'YouTube Premium', price:4, icon:'▷'}
+    };
+    let current = 'all';
+    let currency = 'usd';
+    let cart = {};
+
+    function formatDemoPrice(usd){
+      if(currency === 'uah'){
+        return new Intl.NumberFormat('uk-UA', {style:'currency', currency:'UAH', maximumFractionDigits:0}).format(usd * DEMO_UAH_PER_USD);
+      }
+      return new Intl.NumberFormat('en-US', {style:'currency', currency:'USD', minimumFractionDigits:2, maximumFractionDigits:2}).format(usd);
+    }
+    function saveCart(){
+      try { localStorage.setItem('vortex-store-cart', JSON.stringify(cart)); } catch(error) { /* Storage may be unavailable. */ }
+    }
+    function setCurrency(nextCurrency){
+      currency = nextCurrency === 'uah' ? 'uah' : 'usd';
+      currencyButtons.forEach(button => {
+        const active = button.dataset.currency === currency;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+      priceLabels.forEach(label => {
+        const usd = Number(label.dataset.priceUsd);
+        if(Number.isFinite(usd)) label.textContent = 'Демо-цена: ' + formatDemoPrice(usd);
+      });
+      try { localStorage.setItem('vortex-store-currency', currency); } catch(error) { /* Storage may be unavailable. */ }
+      renderCart();
+    }
+    function openCart(){ cartDialog.classList.add('open'); document.getElementById('closeCart').focus(); }
+    function closeCart(){ cartDialog.classList.remove('open'); document.getElementById('openCart').focus(); }
+    function addToCart(id){
+      if(!PRODUCTS[id]) return;
+      cart[id] = (cart[id] || 0) + 1;
+      saveCart();
+      renderCart();
+      const button = document.querySelector(`[data-add-cart="${id}"]`);
+      if(button){ const previous = button.textContent; button.textContent = '✓ Добавлено'; setTimeout(() => { button.textContent = previous; }, 900); }
+    }
+    function changeQuantity(id, delta){
+      if(!PRODUCTS[id]) return;
+      cart[id] = (cart[id] || 0) + delta;
+      if(cart[id] <= 0) delete cart[id];
+      saveCart(); renderCart();
+    }
+    function removeFromCart(id){ delete cart[id]; saveCart(); renderCart(); }
+    function renderCart(){
+      const entries = Object.entries(cart).filter(([id,qty]) => PRODUCTS[id] && Number.isInteger(qty) && qty > 0);
+      const count = entries.reduce((sum, [,qty]) => sum + qty, 0);
+      const total = entries.reduce((sum, [id,qty]) => sum + PRODUCTS[id].price * qty, 0);
+      cartCountEl.textContent = String(count);
+      cartTotalEl.textContent = formatDemoPrice(total);
+      checkoutButton.disabled = count === 0;
+      checkoutButton.textContent = count ? 'Посмотреть демо-заказ' : 'Демо-корзина пуста';
+      if(!entries.length){
+        cartItemsEl.innerHTML = '<div class="cart-empty">Корзина пока пустая. Добавь товар из каталога.</div>';
+        return;
+      }
+      cartItemsEl.innerHTML = entries.map(([id,qty]) => {
+        const product = PRODUCTS[id];
+        return `<div class="cart-item"><div class="p-icon">${product.icon}</div><div class="cart-item-main"><div class="cart-item-name">${product.name}</div><div class="cart-item-price">${formatDemoPrice(product.price)} за единицу · ${formatDemoPrice(product.price * qty)} всего</div><button class="remove-item" type="button" data-remove="${id}">Убрать</button></div><div class="qty-controls"><button type="button" data-minus="${id}" aria-label="Уменьшить количество">−</button><span class="qty">${qty}</span><button type="button" data-plus="${id}" aria-label="Увеличить количество">＋</button></div></div>`;
+      }).join('');
+    }
+    document.getElementById('openCart').addEventListener('click', openCart);
+    document.getElementById('closeCart').addEventListener('click', closeCart);
+    cartDialog.addEventListener('click', event => { if(event.target === cartDialog) closeCart(); });
+    document.addEventListener('keydown', event => { if(event.key === 'Escape' && cartDialog.classList.contains('open')) closeCart(); });
+    document.querySelectorAll('[data-add-cart]').forEach(button => button.addEventListener('click', () => addToCart(button.dataset.addCart)));
+    cartItemsEl.addEventListener('click', event => {
+      const button = event.target.closest('button');
+      if(!button) return;
+      if(button.dataset.plus) changeQuantity(button.dataset.plus, 1);
+      if(button.dataset.minus) changeQuantity(button.dataset.minus, -1);
+      if(button.dataset.remove) removeFromCart(button.dataset.remove);
+    });
+    checkoutButton.addEventListener('click', () => {
+      alert('Это демо VORTEX STORE: заказ не отправлен, оплата не принимается.');
+    });
+    currencyButtons.forEach(button => button.addEventListener('click', () => setCurrency(button.dataset.currency)));
+    try {
+      const savedCurrency = localStorage.getItem('vortex-store-currency');
+      if(savedCurrency === 'uah' || savedCurrency === 'usd') currency = savedCurrency;
+      const savedCart = JSON.parse(localStorage.getItem('vortex-store-cart') || '{}');
+      if(savedCart && typeof savedCart === 'object' && !Array.isArray(savedCart)){
+        Object.entries(savedCart).forEach(([id,qty]) => { if(PRODUCTS[id] && Number.isInteger(qty) && qty > 0 && qty <= 99) cart[id] = qty; });
+      }
+    } catch(error) { /* Use an empty cart and USD when storage is unavailable. */ }
+    setCurrency(currency);
+    renderCart();
+    function update(){
+      const q = search.value.trim().toLowerCase();
+      let shown = 0;
+      cards.forEach(card => {
+        const matchesType = current === 'all' || card.dataset.type === current;
+        const matchesQuery = !q || (card.dataset.name + ' ' + card.innerText).toLowerCase().includes(q);
+        card.hidden = !(matchesType && matchesQuery);
+        if(!card.hidden) shown++;
+      });
+      let empty = document.querySelector('.empty');
+      if(!shown){ if(!empty){ empty = document.createElement('div'); empty.className='empty'; empty.textContent='Ничего не найдено. Попробуй другое название.'; document.getElementById('products').append(empty); } }
+      else if(empty) empty.remove();
+    }
+    search.addEventListener('input', update);
+    filters.forEach(btn => btn.addEventListener('click', () => {
+      current = btn.dataset.filter;
+      filters.forEach(b => b.classList.toggle('active', b === btn));
+      update();
+    }));
+  </script>
+</body>
+</html>
